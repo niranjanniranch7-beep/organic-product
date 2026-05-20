@@ -1,143 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import Footer from "./components/Footer";
 import "./App.css";
 
 function App() {
+
+  const [tasks, setTasks] = useState([]);
+
+  // Local Storage
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks"));
+
+    if (savedTasks) {
+      setTasks(savedTasks);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  // Add Task
+  const addTask = (taskText) => {
+    const newTask = {
+      id: Date.now(),
+      text: taskText,
+      completed: false
+    };
+
+    setTasks([...tasks, newTask]);
+  };
+
+  // Delete Task
+  const deleteTask = (id) => {
+    setTasks(tasks.filter(task => task.id !== id));
+  };
+
+  // Toggle Complete
+  const toggleTask = (id) => {
+    setTasks(
+      tasks.map(task =>
+        task.id === id
+          ? { ...task, completed: !task.completed }
+          : task
+      )
+    );
+  };
+
   return (
-    <div>
+    <div className="app">
 
-      {/* Navbar */}
-      <nav>
-        <h1>Organic Store</h1>
+      <Navbar />
 
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Products</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </nav>
+      <div className="container">
 
-      {/* Hero Section */}
-      <section className="hero">
+        <TaskForm addTask={addTask} />
 
-        <div className="hero-content">
+        <TaskList
+          tasks={tasks}
+          deleteTask={deleteTask}
+          toggleTask={toggleTask}
+        />
 
-          <h2>Fresh Organic Products</h2>
+      </div>
 
-          <p>
-            Healthy and Natural Products directly from farms.
-          </p>
-
-          <button className="btn">
-            Shop Now
-          </button>
-
-        </div>
-
-      </section>
-
-      {/* Products Section */}
-      <section className="products">
-
-        <h2>Our Products</h2>
-
-        <div className="product-container">
-
-          <div className="card">
-
-            <img
-              src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5"
-              alt="Vegetables"
-            />
-
-            <h3>Organic Vegetables</h3>
-
-            <p>
-              Fresh vegetables grown without chemicals.
-            </p>
-
-          </div>
-
-          <div className="card">
-
-            <img
-              src="https://images.unsplash.com/photo-1574226516831-e1dff420e37f"
-              alt="Fruits"
-            />
-
-            <h3>Natural Fruits</h3>
-
-            <p>
-              Healthy fruits directly from organic farms.
-            </p>
-
-          </div>
-
-          <div className="card">
-
-            <img
-              src="https://images.unsplash.com/photo-1502741338009-cac2772e18bc"
-              alt="Juice"
-            />
-
-            <h3>Organic Juices</h3>
-
-            <p>
-              Fresh juice with natural ingredients.
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* About Section */}
-      <section className="about">
-
-        <h2>About Us</h2>
-
-        <p>
-          We provide high-quality organic food products to improve healthy living.
-          Our mission is to connect farmers and customers directly.
-        </p>
-
-      </section>
-
-      {/* Contact Section */}
-      <section className="contact">
-
-        <h2>Contact Us</h2>
-
-        <form>
-
-          <input
-            type="text"
-            placeholder="Enter your name"
-          />
-
-          <input
-            type="email"
-            placeholder="Enter your email"
-          />
-
-          <textarea
-            rows="5"
-            placeholder="Enter your message"
-          ></textarea>
-
-          <button className="btn">
-            Send Message
-          </button>
-
-        </form>
-
-      </section>
-
-      {/* Footer */}
-      <footer>
-        <p>© 2026 Organic Store | All Rights Reserved</p>
-      </footer>
+      <Footer />
 
     </div>
   );
